@@ -81,7 +81,7 @@ Interpretting the output is not obvious, see the [Inference Tutorial](https://gi
 
 # Usage 
 
-The commandlines we used for inference in real data in our paper are provided in this [Snakefile](https://github.com/trevorcousins/cobraa/blob/main/reproducibility/inference_realdata/Snakefile), and can used as a general usage guide. 
+The commandlines we used for inference in real data in our paper are provided in this [Snakefile](https://github.com/trevorcousins/cobraa/blob/main/reproducibility/inference_realdata/Snakefile), and can be used as a general usage guide. 
 
 # Advanced
 
