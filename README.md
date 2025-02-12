@@ -1,12 +1,12 @@
 # *cobraa*
 
-A method for coalescence-based reconstruction of archaic admixture. *cobraa* is a hidden Markov model that uses a diploid sequence to infer population size changes and archaic admxiture with an unsampled population. It is an extension of the PSMC framework, which infers population size changes and assumes no admixture (i.e. panmixia). 
+A method for coalescence-based reconstruction of archaic admixture. *cobraa* is a hidden Markov model that uses a diploid sequence to infer population size changes and archaic admixture with an unsampled population. It is an extension of the PSMC framework, which infers population size changes and assumes no admixture (i.e. panmixia). 
 
 The model of admixture that *cobraa* seeks to infer is as follows. Going forwards in time, an ancestral population splits cleanly into two populations $A$ and $B$ at time $T_2$; $A$ and $B$ remain in isolation until time $T_1$, at which point there is an admixture event where the admixed population derives $\gamma$ percent of its ancestry from $B$ and $1-\gamma$ from $A$. All populations are allowed to vary in size over time. Thus, the model parameters are N_A(t), N_B(t), $\gamma$, $T_1$, and $T_2$. For convenience, the size changes of the admixed population (more recent than $T_1$), and the ancestral population (more ancient than $T_2$) are modelled as changes in $N_A(t)$.
 
 After the parameters have been inferred, *cobraa-path* (an extension of *cobraa*) can be used to infer regions of the genome that derive from $A$ or $B$ (or both). 
 
-Care should be used when interpretting the fit of *cobraa*. We recommend comparing the fit of the model to a panmictic model as in PSMC, to see if admxiture is well supported. 
+Care should be used when interpretting the fit of *cobraa*. We recommend comparing the fit of the model to a panmictic model as in PSMC, to see if admixture is well supported. 
 
 ## Installation
 
@@ -95,7 +95,7 @@ Default behaviour is to use `D=32`.
 -ts, -te<br>
 The time indices of $T_1$ and $T_2$, respectively. 
 
-We must have `ts`<`te`<`D`. If you want to fit an unstructured model (i.e. panmictic, exactly as in PSMC), then you can do `-ts None -te None`, or just omit these arguments as default behaviour is to assume `ts=None`, `te=None`. If you are fitting a structured model with `D=32`, and want to fit populations size and admixture parameters with a divergence at the 18th index and an admxiture time at the 10th index, then you would do:
+We must have `ts`<`te`<`D`. If you want to fit an unstructured model (i.e. panmictic, exactly as in PSMC), then you can do `-ts None -te None`, or just omit these arguments as default behaviour is to assume `ts=None`, `te=None`. If you are fitting a structured model with `D=32`, and want to fit populations size and admixture parameters with a divergence at the 18th index and an admixture time at the 10th index, then you would do:
 
 ```python /path/to/installation/cobraa/cobraa.py -in <infiles> -D 32 -b <b> -ts 10 -te 18 -its <its> -o <outprefix> | tee <logfile>```
 
