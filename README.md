@@ -219,27 +219,29 @@ Note that population $B$ only exists between `ts` and `te`, so input parameters 
 
 We use *cobraa* with the following versions of each package: 
 ```
-python 3.10.5
-numba 0.55.2
-joblib 1.1.0
-matplotlib 3.5.2
-pandas 1.4.3
-psutil 5.9.1
-scipy 1.8.1
+python==3.10.5
+numba==0.55.2
+joblib==1.1.0
+matplotlib==3.5.2
+pandas==1.4.3
+psutil==5.9.1
+scipy==1.8.1
+numpy==2.0.2
+
 ```
 If your installation attempt fails, please try with versions listed above.
 In the above commands you will of course need to change the `/path/to/installation/` path. For a particular example, if I am in my home directory (`/home/trevor`) and do `git clone https://github.com/trevorcousins/cobraa.git`, then the code is ready to run at `/home/trevor/cobraa/cobraa.py` . 
 
-
 ### Division by Zero error
 
-If your heterozygosity is very high (e.g. `theta>0.01`), the default binsize of 100 will not be appropriate and you'll get an error. Instead, reduce the binsize such that there being more than ~3 heterozygotes per bin is rare. E.g. if theta=0.05 then we expect a heterozygous position every 20 base pairs on average, so a suitable bin size is 5 or 10 (add `-b 5` or `-b 10` to your command line). [See here](https://github.com/trevorcousins/PSMCplus/issues/2)
+If your heterozygosity is very high (e.g. `theta>0.01`), the default binsize of 100 will not be appropriate and you'll get an error. Instead, reduce the binsize such that there being more than ~3 heterozygotes per bin is rare. E.g. if theta=0.05 then we expect a heterozygous position every 20 base pairs on average, so a suitable bin size is 5 or 10 (add `-b 5` or `-b 10` to your command line). 
 
-If you are still having problems, please submit a new issue.
+### Other
+
+If you are still having problems with the code, please submit a new issue. If you have questions about the research, please email me at trevorsimoncousins(/at/)gmail.com and [Richard Durbin](https://www.gen.cam.ac.uk/directory/richard-durbin).
 
 ## Citation
 
-If you use cobraa, please cite the following [paper](https://www.biorxiv.org/content/10.1101/2024.03.24.586479v1):
+If you use cobraa, please cite the following [paper](https://www.nature.com/articles/s41588-025-02117-1):
 
-
-*Cousins T, Scally A, Durbin R. A structured coalescent model reveals deep ancestral structure shared by all modern humans. bioRxiv. 2024:2024-03.
+*Cousins, Trevor, Aylwyn Scally, and Richard Durbin. "A structured coalescent model reveals deep ancestral structure shared by all modern humans." Nature Genetics (2025)
