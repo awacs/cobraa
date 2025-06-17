@@ -226,7 +226,7 @@ matplotlib==3.5.2
 pandas==1.4.3
 psutil==5.9.1
 scipy==1.8.1
-numpy==2.0.2
+numpy==1.26.4
 
 ```
 If your installation attempt fails, please try with versions listed above.
