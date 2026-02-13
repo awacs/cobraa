@@ -19,6 +19,7 @@ from joblib import Parallel, delayed
 import pickle
 from joblib import Parallel, delayed
 from scipy import linalg
+import math
 
 
 # Parse the given time segment pattern for lambda parameters
@@ -489,8 +490,8 @@ def write_emission_probs(D,L,theta,j_max,T,m=0,midpoint_end=True):
     for j in range(0,j_max+1):
         # print('shape of abba is {}'.format(abba.shape))
         # print('shape of E[:,j] is {}'.format(E[:,j].shape))
-        # E[:,j] = np.array([((( L*theta*midpoints[i])**j)*np.exp(-L*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # old, no masks
-        E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # update220117_1825
+        # E[:,j] = np.array([((( L*theta*midpoints[i])**j)*np.exp(-L*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # old, no masks
+        E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # update220117_1825
     
     return E
 
@@ -563,8 +564,8 @@ def write_emission_probs_b(D,L,theta,j_max,T,b,m=0,midpoint_end=True):
     for j in range(0,j_max+1):
         # print('shape of abba is {}'.format(abba.shape))
         # print('shape of E[:,j] is {}'.format(E[:,j].shape))
-        # E[:,j] = np.array([((( L*theta*midpoints[i])**j)*np.exp(-L*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # old, no masks
-        E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # update220117_1825
+        # E[:,j] = np.array([((( L*theta*midpoints[i])**j)*np.exp(-L*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # old, no masks
+        E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # update220117_1825
     return E
 
 
@@ -869,8 +870,8 @@ def write_emission_path_probs(D_flat,D,L,theta,j_max,T,ts,te,m=0):
 
     index = 0
     for j in range(0,j_max+1):
-        # E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # update220117_1825
-        regular_E = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/np.math.factorial(j) for i in range(0,D)]) # update220117_1825
+        # E[:,j] = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # update220117_1825
+        regular_E = np.array([((( (L-m)*theta*midpoints[i])**j)*np.exp(-(L-m)*theta*midpoints[i]))/math.factorial(j) for i in range(0,D)]) # update220117_1825
         E[path_indexes,j] = regular_E # update220117_1825
         E[BB_instruct_indices,j] = regular_E[corresponding_BB_instruct_indices]
         E[BB_poststruct_indices,j] = regular_E[corresponding_BB_poststruct_indices]
