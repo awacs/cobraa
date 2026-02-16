@@ -12,7 +12,7 @@ def validate_config(key, description):
         print(f"ERROR: Required configuration '{key}' is not set in config.yaml", file=sys.stderr)
         print(f"       Please edit config.yaml and set {description}", file=sys.stderr)
         sys.exit(1)
-    if value.startswith('/path/to/'):
+    if value.startswith('/path/to/') or value.startswith('EDIT_ME/'):
         print(f"ERROR: Configuration '{key}' still has placeholder value: {value}", file=sys.stderr)
         print(f"       Please edit config.yaml and set the actual path for {description}", file=sys.stderr)
         sys.exit(1)
