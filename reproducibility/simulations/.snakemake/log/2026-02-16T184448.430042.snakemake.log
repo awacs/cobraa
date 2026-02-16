@@ -1,0 +1,86 @@
+Lints for snakefile /home/runner/work/cobraa/cobraa/reproducibility/simulations/Snakefile:
+    * Absolute path "/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{qqq}.mhs" in line 11:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/') # sample{wildcards.sample}_chrom{qqq}.mhs" in line 12:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604" in line 13:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/ancestry/msprime_simulation_220216_combined.py" in line 18:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604" in line 21:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/cobraa/cobraa.py" in line 22:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/final_parameters.txt" in line 80:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/cobraa_231107/final_parameters.txt" in line 81:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/cobraa_231119/final_parameters.txt" in line 82:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference/sample{sample}_final_parameters.txt" in line 186:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference/sample{sample}_log.txt" in line 188:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+    * Absolute path "/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/inference/sample{wildcards.sample}_final_parameters.txt" in line 191:
+      Do not define absolute paths inside of the workflow, since this renders
+      your workflow irreproducible on other machines. Use path relative to the
+      working directory instead, or make the path configurable via a config
+      file.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/configuration.html#configuration
+
