@@ -61,7 +61,7 @@ Decodes the genome to infer local ancestry and coalescence times.
 - Generate posterior probabilities of ancestry states
 
 **Key Features:**
-- Uses **composite ML parameters** (ts=13, te=21)
+- Uses **composite maximum likelihood (ML) parameters** (ts=13, te=21) - the time pair identified as having the highest composite log-likelihood from the grid search
 - Runs on individual chromosomes (1 per job)
 - Downsamples output every 10 sites (`-decode_downsample 10`)
 - Uses `-path` flag for cobraa-path model

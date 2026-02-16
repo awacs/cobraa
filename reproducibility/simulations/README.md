@@ -191,5 +191,5 @@ These can be modified for different computing environments.
 - The pipeline uses msprime for coalescent simulations
 - Simulations use the SMC' approximation (appropriate for PSMC/cobraa)
 - Both panmictic and structured models are simulated with identical coalescence rates
-- The `spread1` and `spread2` parameters control time interval spacing (same as in cobraa)
+- The `spread1` and `spread2` parameters control time interval spacing (same as in the main cobraa inference pipeline)
 - Multiple samples allow assessment of variance in parameter estimates
