@@ -1,18 +1,38 @@
 import pdb
+import sys
 
+# Load configuration
+configfile: "config.yaml"
+
+# Validate that config has been updated from defaults
+def validate_config(key, description):
+    """Check if config value has been set to something other than placeholder"""
+    value = config.get(key)
+    if value is None:
+        print(f"ERROR: Required configuration '{key}' is not set in config.yaml", file=sys.stderr)
+        print(f"       Please edit config.yaml and set {description}", file=sys.stderr)
+        sys.exit(1)
+    if value.startswith('/path/to/') or value.startswith('EDIT_ME/'):
+        print(f"ERROR: Configuration '{key}' still has placeholder value: {value}", file=sys.stderr)
+        print(f"       Please edit config.yaml and set the actual path for {description}", file=sys.stderr)
+        sys.exit(1)
+    return value
 
 def debug_me(wildcards):
     pdb.set_trace()
     return None
 
 def get_mhs_files(wildcards):
-    # files = '/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{qqq}.mhs' for qqq in range(1,21)]    
-    # files = os.listdir(f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/') # sample{wildcards.sample}_chrom{qqq}.mhs' for qqq in range(1,21)]
-    files = [f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{zchromz}.mhs.gz' for zchromz in range(1,20+1)]
+    data_dir = validate_config('data_dir', 'data directory for simulations')
+    files = [f'{data_dir}/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{zchromz}.mhs.gz' for zchromz in range(1,20+1)]
     return files
 
 
-script='/home/tc557/ancestry/msprime_simulation_220216_combined.py'
+script = validate_config('simulation_script', 'simulation script path')
+
+# Helper function to get data directory
+DATA_DIR = validate_config('data_dir', 'data directory for simulations')
+COBRAA_SCRIPT = validate_config('cobraa_script', 'cobraa.py script path')
 
 
 mus = [1.25e-08]
@@ -66,10 +86,10 @@ for ts in range(1,31):
 
 rule all:
     input:
-        # [f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/sample{sample}_chrom{chrom}.mhs' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms] # simulate
-        # [f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss] # run PSMC (unstructure)
-        # [f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss for gamma_fg in gamma_fgs] # run cobraa (structure)
-        [f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/inferts{infts_te[0]}_infte{infts_te[1]}/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for infts_te in infer_ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss for gamma_fg in gamma_fgs] # run cobraa (structure), searching for all time pairs        
+        # [f'{DATA_DIR}/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/sample{sample}_chrom{chrom}.mhs' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms] # simulate
+        # [f'{DATA_DIR}/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss] # run PSMC (unstructure)
+        # [f'{DATA_DIR}/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss for gamma_fg in gamma_fgs] # run cobraa (structure)
+        [f'{DATA_DIR}/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts_te[0]}/te_{ts_te[1]}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/inferts{infts_te[0]}_infte{infts_te[1]}/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt' for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for ts_te in ts_te_sim_pairs for infts_te in infer_ts_te_sim_pairs for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for binsize in bin_sizes for thresh in threshs for iterations in iterationss for gamma_fg in gamma_fgs] # run cobraa (structure), searching for all time pairs        
         # [f'/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/final_parameters.txt' for finalT in finalTs for rho_search in rho_search_options for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for lambda_B_segs in lambda_B_segments_options for midpoint_emissions in midpoint_emissionss for ts in tss for te in tes for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for bs in bin_sizes for rho in rhos for thresh in threshs for iterations in iterationss for lub in lubs for inf_pair in inference_ts_te_pairs for theta in thetas]
         # [f'/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/cobraa_231107/final_parameters.txt' for finalT in finalTs for rho_search in rho_search_options for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for lambda_B_segs in lambda_B_segments_options for midpoint_emissions in midpoint_emissionss for ts in tss for te in tes for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for bs in bin_sizes for rho in rhos for thresh in threshs for iterations in iterationss for lub in lubs for inf_pair in inference_ts_te_pairs for theta in thetas]
         # [f'/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/SPSMC_inference/binsize_{bs}/rho_{rho}/theta_{theta}/rhofixed_{rho_search}/sample{sample}/iterations_{iterations}/thresh_{thresh}/lub_{lub}/lambdaB_{lambda_B_segs}/finalT_{finalT}/midpointemissions_{midpoint_emissions}/pair_{inf_pair[0]}_{inf_pair[1]}/cobraa_231119/final_parameters.txt' for finalT in finalTs for rho_search in rho_search_options for model in models for N in Ns for p in ps for mu in mus for L in Ls for D in Ds for lambda_B_segs in lambda_B_segments_options for midpoint_emissions in midpoint_emissionss for ts in tss for te in tes for intensity in intensities for gamma in gammas for sim_model in simmodels for spread_1 in spread1s for spread_2 in spread2s for sample in samples for chrom in chroms for bs in bin_sizes for rho in rhos for thresh in threshs for iterations in iterationss for lub in lubs for inf_pair in inference_ts_te_pairs for theta in thetas]
@@ -80,10 +100,10 @@ rule simulate:
     # input:
         # infile = debug_me
     output:
-        # out = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/sample{sample}_chrom{chrom}.mhs'
-        out = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/sample{sample}_chrom{chrom}.mhs.gz'
+        # out = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/sample{{sample}}_chrom{{chrom}}.mhs'
+        out = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/sample{{sample}}_chrom{{chrom}}.mhs.gz'
     log:
-        '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/sample{sample}_chrom{chrom}_log.txt'
+        f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/sample{{sample}}_chrom{{chrom}}_log.txt'
     resources:
         partition="icelake-himem",
         time='02:00:00',
@@ -91,7 +111,7 @@ rule simulate:
         mem="355G",
         cores=1
     shell:
-        'python /home/tc557/cobraa/reproducibility/simulations/msprime_simulations.py -p {wildcards.p} -mu {wildcards.mu} -L {wildcards.L} -model {wildcards.model} -N {wildcards.N} -o_mhs_file {output.out} -its 1 -s {wildcards.ts} -e {wildcards.te} -alpha {wildcards.gamma} -D {wildcards.D} -sim_model {wildcards.sim_model} -beta {wildcards.intensity} -w_mhs -spread1 {wildcards.spread_1} -spread2 {wildcards.spread_2} | tee {log}'
+        'python {script} -p {{wildcards.p}} -mu {{wildcards.mu}} -L {{wildcards.L}} -model {{wildcards.model}} -N {{wildcards.N}} -o_mhs_file {{output.out}} -its 1 -s {{wildcards.ts}} -e {{wildcards.te}} -alpha {{wildcards.gamma}} -D {{wildcards.D}} -sim_model {{wildcards.sim_model}} -beta {{wildcards.intensity}} -w_mhs -spread1 {{wildcards.spread_1}} -spread2 {{wildcards.spread_2}} | tee {{log}}'
 
 
 rule PSMC_inference_PSMC:
@@ -99,12 +119,12 @@ rule PSMC_inference_PSMC:
         infiles = get_mhs_files,
         # debug = debug_me
     output:
-        outfile = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_fixedtheta0.0008_sample{sample}_final_parameters.txt'
+        outfile = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/unstructure/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_fixedtheta0.0008_sample{{sample}}_final_parameters.txt'
     log:
-        '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_fixedtheta0.0008_sample{sample}_log.txt'
+        f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/unstructure/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_fixedtheta0.0008_sample{{sample}}_log.txt'
     params:
         inputfiles = lambda wildcards: " ".join(get_mhs_files(wildcards)),
-        outprefix = lambda wildcards: f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/inference_240607/unstructure/binsize{wildcards.binsize}_thresh{wildcards.thresh}_iterations{wildcards.iterations}_fixedtheta0.0008_sample{wildcards.sample}_',
+        outprefix = lambda wildcards: f'{DATA_DIR}/model_{{wildcards.model}}/L_{{wildcards.L}}/N_{{wildcards.N}}/mu_{{wildcards.mu}}/p_{{wildcards.p}}/D_{{wildcards.D}}/ts_{{wildcards.ts}}/te_{{wildcards.te}}/intensity_{{wildcards.intensity}}/gamma_{{wildcards.gamma}}/simmodel_{{wildcards.sim_model}}/spread1_{{wildcards.spread_1}}/spread2_{{wildcards.spread_2}}/inference_240607/unstructure/binsize{{wildcards.binsize}}_thresh{{wildcards.thresh}}_iterations{{wildcards.iterations}}_fixedtheta0.0008_sample{{wildcards.sample}}_',
         final_T_factor = 'False',
         midpoint_emissions = 'False',
         ztheta = 0.0008
@@ -115,20 +135,20 @@ rule PSMC_inference_PSMC:
         mem="200G",
         cores=20
     shell:
-        'python /home/tc557/cobraa/cobraa.py -in {params.inputfiles} -o {params.outprefix} -D {wildcards.D} -b {wildcards.binsize} -theta {params.ztheta} -ts None -te None -its {wildcards.iterations} -thresh {wildcards.thresh} -spread_1 {wildcards.spread_1} -spread_2 {wildcards.spread_2} -final_T_factor {params.final_T_factor} -midpoint_emissions {params.midpoint_emissions} | tee {log}'                
+        'python {COBRAA_SCRIPT} -in {{params.inputfiles}} -o {{params.outprefix}} -D {{wildcards.D}} -b {{wildcards.binsize}} -theta {{params.ztheta}} -ts None -te None -its {{wildcards.iterations}} -thresh {{wildcards.thresh}} -spread_1 {{wildcards.spread_1}} -spread_2 {{wildcards.spread_2}} -final_T_factor {{params.final_T_factor}} -midpoint_emissions {{params.midpoint_emissions}} | tee {{log}}'                
         
 rule cobraa_inference_cobraa:
     input:
         infiles = get_mhs_files,
-        infileflag = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_fixedtheta0.0008_sample{sample}_final_parameters.txt'
+        infileflag = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/unstructure/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_fixedtheta0.0008_sample{{sample}}_final_parameters.txt'
     output:
-        outfile = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt'
+        outfile = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/structure/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_gammafg{{gamma_fg}}_fixedtheta0.0008_sample{{sample}}_final_parameters.txt'
     log:
-        '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/unstructure/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_log.txt'
+        f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/unstructure/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_gammafg{{gamma_fg}}_fixedtheta0.0008_sample{{sample}}_log.txt'
         # this file location was a mistake, it should have been written to the same place but instead with ...inference_240607/structure/binsize{binsize}.... rather than ...inference_240607/unstructure/binsize{binsize}...
     params:
         inputfiles = lambda wildcards: " ".join(get_mhs_files(wildcards)),
-        outprefix = lambda wildcards: f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/inference_240607/structure/binsize{wildcards.binsize}_thresh{wildcards.thresh}_iterations{wildcards.iterations}_gammafg{wildcards.gamma_fg}_fixedtheta0.0008_sample{wildcards.sample}_',
+        outprefix = lambda wildcards: f'{DATA_DIR}/model_{{wildcards.model}}/L_{{wildcards.L}}/N_{{wildcards.N}}/mu_{{wildcards.mu}}/p_{{wildcards.p}}/D_{{wildcards.D}}/ts_{{wildcards.ts}}/te_{{wildcards.te}}/intensity_{{wildcards.intensity}}/gamma_{{wildcards.gamma}}/simmodel_{{wildcards.sim_model}}/spread1_{{wildcards.spread_1}}/spread2_{{wildcards.spread_2}}/inference_240607/structure/binsize{{wildcards.binsize}}_thresh{{wildcards.thresh}}_iterations{{wildcards.iterations}}_gammafg{{wildcards.gamma_fg}}_fixedtheta0.0008_sample{{wildcards.sample}}_',
         final_T_factor = 'False',
         midpoint_emissions = 'False',
         ztheta = 0.0008,
@@ -141,20 +161,20 @@ rule cobraa_inference_cobraa:
         mem="200G",
         cores=20,
     shell:
-        'python /home/tc557/cobraa/cobraa.py -in {params.inputfiles} -o {params.outprefix} -D {wildcards.D} -b {wildcards.binsize} -theta {params.ztheta} -ts {wildcards.ts} -te {wildcards.te} -its {wildcards.iterations} -gamma_fg {wildcards.gamma_fg} -thresh {wildcards.thresh} -spread_1 {wildcards.spread_1} -spread_2 {wildcards.spread_2} -final_T_factor {params.final_T_factor} -midpoint_emissions {params.midpoint_emissions} -lambda_B_segments {params.lambda_B_parameters} -gamma_upr {params.gamma_upr} | tee {log}'                
+        'python {COBRAA_SCRIPT} -in {{params.inputfiles}} -o {{params.outprefix}} -D {{wildcards.D}} -b {{wildcards.binsize}} -theta {{params.ztheta}} -ts {{wildcards.ts}} -te {{wildcards.te}} -its {{wildcards.iterations}} -gamma_fg {{wildcards.gamma_fg}} -thresh {{wildcards.thresh}} -spread_1 {{wildcards.spread_1}} -spread_2 {{wildcards.spread_2}} -final_T_factor {{params.final_T_factor}} -midpoint_emissions {{params.midpoint_emissions}} -lambda_B_segments {{params.lambda_B_parameters}} -gamma_upr {{params.gamma_upr}} | tee {{log}}'                
         
 
 rule alltimepairs_cobraa_inference_cobraa_alltimepairs:
     input:
         infiles = get_mhs_files,
     output:
-        outfile = '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/inferts{infts}_infte{infte}/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_final_parameters.txt'
+        outfile = f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/structure/inferts{{infts}}_infte{{infte}}/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_gammafg{{gamma_fg}}_fixedtheta0.0008_sample{{sample}}_final_parameters.txt'
     log:
-        '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{model}/L_{L}/N_{N}/mu_{mu}/p_{p}/D_{D}/ts_{ts}/te_{te}/intensity_{intensity}/gamma_{gamma}/simmodel_{sim_model}/spread1_{spread_1}/spread2_{spread_2}/inference_240607/structure/inferts{infts}_infte{infte}/binsize{binsize}_thresh{thresh}_iterations{iterations}_gammafg{gamma_fg}_fixedtheta0.0008_sample{sample}_log.txt'
+        f'{DATA_DIR}/model_{{model}}/L_{{L}}/N_{{N}}/mu_{{mu}}/p_{{p}}/D_{{D}}/ts_{{ts}}/te_{{te}}/intensity_{{intensity}}/gamma_{{gamma}}/simmodel_{{sim_model}}/spread1_{{spread_1}}/spread2_{{spread_2}}/inference_240607/structure/inferts{{infts}}_infte{{infte}}/binsize{{binsize}}_thresh{{thresh}}_iterations{{iterations}}_gammafg{{gamma_fg}}_fixedtheta0.0008_sample{{sample}}_log.txt'
         # this file location was a mistake, it should have been written to the same place but instead with ...inference_240607/structure/binsize{binsize}.... rather than ...inference_240607/unstructure/binsize{binsize}...
     params:
         inputfiles = lambda wildcards: " ".join(get_mhs_files(wildcards)),
-        outprefix = lambda wildcards: f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/inference_240607/structure/inferts{wildcards.infts}_infte{wildcards.infte}/binsize{wildcards.binsize}_thresh{wildcards.thresh}_iterations{wildcards.iterations}_gammafg{wildcards.gamma_fg}_fixedtheta0.0008_sample{wildcards.sample}_',
+        outprefix = lambda wildcards: f'{DATA_DIR}/model_{{wildcards.model}}/L_{{wildcards.L}}/N_{{wildcards.N}}/mu_{{wildcards.mu}}/p_{{wildcards.p}}/D_{{wildcards.D}}/ts_{{wildcards.ts}}/te_{{wildcards.te}}/intensity_{{wildcards.intensity}}/gamma_{{wildcards.gamma}}/simmodel_{{wildcards.sim_model}}/spread1_{{wildcards.spread_1}}/spread2_{{wildcards.spread_2}}/inference_240607/structure/inferts{{wildcards.infts}}_infte{{wildcards.infte}}/binsize{{wildcards.binsize}}_thresh{{wildcards.thresh}}_iterations{{wildcards.iterations}}_gammafg{{wildcards.gamma_fg}}_fixedtheta0.0008_sample{{wildcards.sample}}_',
         final_T_factor = 'False',
         midpoint_emissions = 'False',
         ztheta = 0.0008,
@@ -167,7 +187,7 @@ rule alltimepairs_cobraa_inference_cobraa_alltimepairs:
         mem="200G",
         cores=20,
     shell:
-        'python /home/tc557/cobraa/cobraa.py -in {params.inputfiles} -o {params.outprefix} -D {wildcards.D} -b {wildcards.binsize} -theta {params.ztheta} -ts {wildcards.infts} -te {wildcards.infte} -its {wildcards.iterations} -gamma_fg {wildcards.gamma_fg} -thresh {wildcards.thresh} -spread_1 {wildcards.spread_1} -spread_2 {wildcards.spread_2} -final_T_factor {params.final_T_factor} -midpoint_emissions {params.midpoint_emissions} -lambda_B_segments {params.lambda_B_parameters} -gamma_upr {params.gamma_upr} | tee {log}'                
+        'python {COBRAA_SCRIPT} -in {{params.inputfiles}} -o {{params.outprefix}} -D {{wildcards.D}} -b {{wildcards.binsize}} -theta {{params.ztheta}} -ts {{wildcards.infts}} -te {{wildcards.infte}} -its {{wildcards.iterations}} -gamma_fg {{wildcards.gamma_fg}} -thresh {{wildcards.thresh}} -spread_1 {{wildcards.spread_1}} -spread_2 {{wildcards.spread_2}} -final_T_factor {{params.final_T_factor}} -midpoint_emissions {{params.midpoint_emissions}} -lambda_B_segments {{params.lambda_B_parameters}} -gamma_upr {{params.gamma_upr}} | tee {{log}}'                
         
 
 """

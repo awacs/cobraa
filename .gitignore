@@ -3,5 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Snakemake
+.snakemake/
+
 # Temporary files
 requirements_fixed.txt

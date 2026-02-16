@@ -1,0 +1,31 @@
+# Configuration file for mhsfiles Snakefile
+# *** IMPORTANT: You MUST edit this file with your actual paths before running ***
+# Replace all paths below with your local system paths
+
+# Reference genome for GRCh38 (hg38)
+# Download from: https://www.ncbi.nlm.nih.gov/genome/guide/human/
+reference_genome: "EDIT_ME/path/to/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+
+# Scripts directory (typically: /your/cobraa/installation/reproducibility/mhsfiles)
+scripts_dir: "EDIT_ME/path/to/cobraa/reproducibility/mhsfiles"
+
+# Mappability mask directory for GRCh38
+mappability_mask_dir: "EDIT_ME/path/to/GRCh38_ref/strict_perchrom"
+
+# Mean coverage file
+meancoverage_file: "EDIT_ME/path/to/meancoverage.txt"
+
+# Base data directory for storing outputs
+data_dir: "EDIT_ME/path/to/data"
+
+# 1000 Genomes data directory
+genomes_data_dir: "EDIT_ME/path/to/1000Genomes_30X"
+
+# CRAM files directory
+cram_files_dir: "EDIT_ME/path/to/1000Genomes_30X/crumble/GRCh38"
+
+# Sample metadata directory
+sample_metadata_dir: "EDIT_ME/path/to/1000Genomes_30X/sample_metadata"
+
+# Output directory for processing
+output_dir: "EDIT_ME/path/to/output/mhs_files"
