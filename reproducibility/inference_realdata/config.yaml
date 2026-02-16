@@ -1,0 +1,17 @@
+# Configuration file for inference_realdata Snakefile
+# Replace these paths with your local paths
+
+# Scripts directory (change to your local cobraa installation)
+cobraa_script: "/path/to/cobraa/cobraa.py"
+
+# 1000 Genomes data directory
+genomes_data_dir: "/path/to/1000Genomes_30X"
+
+# MHS files base directory
+mhs_files_dir: "/path/to/1000Genomes_30X/mhs_files"
+
+# Sample metadata directory
+sample_metadata_dir: "/path/to/1000Genomes_30X/sample_metadata"
+
+# Base directory for inference outputs
+data_dir: "/path/to/PSMCplus_analysis"

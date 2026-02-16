@@ -1,0 +1,11 @@
+# Configuration file for simulations Snakefile
+# Replace these paths with your local paths
+
+# Scripts directory (change to your local cobraa installation)
+cobraa_script: "/path/to/cobraa/cobraa.py"
+
+# Simulation script
+simulation_script: "/path/to/cobraa/reproducibility/simulations/msprime_simulations.py"
+
+# Base directory for simulation outputs
+data_dir: "/path/to/cobraa_simulations_and_inference"
