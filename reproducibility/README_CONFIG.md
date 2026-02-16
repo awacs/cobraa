@@ -1,12 +1,21 @@
 # Snakemake Configuration Guide
 
-This directory contains Snakefiles for processing genomic data with *cobraa*. The Snakefiles have been updated to use configuration files instead of hard-coded paths, making them portable across different systems.
+This directory contains Snakefiles for processing genomic data with *cobraa*. 
+
+## ⚠️ IMPORTANT: Configuration is REQUIRED
+
+**The Snakefiles will NOT work without proper configuration.** The original hard-coded paths (from `/home/tc557/...`) are from another user's system and won't exist on your machine.
+
+You **MUST** edit the `config.yaml` files with your actual paths before running any workflows.
 
 ## Quick Start
 
-1. Copy the `config.yaml` file in each reproducibility subdirectory
-2. Edit the paths in `config.yaml` to match your local system
-3. Run Snakemake as usual: `snakemake -s Snakefile --cores <N>`
+1. Navigate to a workflow directory: `cd reproducibility/mhsfiles/` (or simulations/, inference_realdata/)
+2. Edit `config.yaml` with your actual paths (replace all `EDIT_ME/...` placeholders)
+3. Run: `snakemake -s Snakefile --dry-run` to verify configuration
+4. Run: `snakemake -s Snakefile --cores <N>` to execute the workflow
+
+See `QUICKSTART.md` for detailed setup instructions.
 
 ## Configuration Files
 

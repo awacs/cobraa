@@ -1,15 +1,30 @@
 import pdb
 import numpy as np 
 import pandas as pd
+import sys
 
 # Load configuration
 configfile: "config.yaml"
 
-# Get paths from config with fallback to old values for backward compatibility
-DATA_DIR = config.get('data_dir', '/home/tc557/rds/hpc-work/PSMCplus_analysis_231026')
-MHS_FILES_DIR = config.get('mhs_files_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213')
-SAMPLE_METADATA_DIR = config.get('sample_metadata_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213')
-COBRAA_SCRIPT = config.get('cobraa_script', '/home/tc557/cobraa/cobraa.py')
+# Validate that config has been updated from defaults
+def validate_config(key, description):
+    """Check if config value has been set to something other than placeholder"""
+    value = config.get(key)
+    if value is None:
+        print(f"ERROR: Required configuration '{key}' is not set in config.yaml", file=sys.stderr)
+        print(f"       Please edit config.yaml and set {description}", file=sys.stderr)
+        sys.exit(1)
+    if value.startswith('/path/to/'):
+        print(f"ERROR: Configuration '{key}' still has placeholder value: {value}", file=sys.stderr)
+        print(f"       Please edit config.yaml and set the actual path for {description}", file=sys.stderr)
+        sys.exit(1)
+    return value
+
+# Get paths from config - now required, not optional
+DATA_DIR = validate_config('data_dir', 'data directory for inference outputs')
+MHS_FILES_DIR = validate_config('mhs_files_dir', 'MHS files directory')
+SAMPLE_METADATA_DIR = validate_config('sample_metadata_dir', 'sample metadata directory')
+COBRAA_SCRIPT = validate_config('cobraa_script', 'cobraa.py script path')
 
 def split_popsam(wildcards):
     zpop = wildcards.popsam.split('_')[0]

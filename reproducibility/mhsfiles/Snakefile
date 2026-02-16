@@ -1,22 +1,37 @@
 import pdb
 import os
+import sys
 
 # Load configuration
 configfile: "config.yaml"
 
-# Get paths from config with fallback to old values for backward compatibility
-reference_HGDP = config.get('reference_genome', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/HGDP/downloaded_220412/GRCh38_full_analysis_set_plus_decoy_hla.fa') # reference for GRCh38 (hg20). Needs to be downloaded
-scripts_dir = config.get('scripts_dir', '/home/tc557/cobraa/reproducibility/mhsfiles')
+# Validate that config has been updated from defaults
+def validate_config(key, description):
+    """Check if config value has been set to something other than placeholder"""
+    value = config.get(key)
+    if value is None:
+        print(f"ERROR: Required configuration '{key}' is not set in config.yaml", file=sys.stderr)
+        print(f"       Please edit config.yaml and set {description}", file=sys.stderr)
+        sys.exit(1)
+    if value.startswith('/path/to/'):
+        print(f"ERROR: Configuration '{key}' still has placeholder value: {value}", file=sys.stderr)
+        print(f"       Please edit config.yaml and set the actual path for {description}", file=sys.stderr)
+        sys.exit(1)
+    return value
+
+# Get paths from config - now required, not optional
+reference_HGDP = validate_config('reference_genome', 'reference genome (GRCh38)')
+scripts_dir = validate_config('scripts_dir', 'scripts directory')
 bamCaller_script = os.path.join(scripts_dir, 'bamCaller.py') # script written by Stephan Schiffels to call variants from a bam
 generatemhs_script = os.path.join(scripts_dir, 'generate_multihetsep.py') # script written by Aylwyn Scally to write a mask bed from a bam file 
-mappability_mask_file = config.get('mappability_mask_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/HGDP/GRCh38_ref/strict_perchrom/') # mappability mask for GRCh38, will need to be downloaded
+mappability_mask_file = validate_config('mappability_mask_dir', 'mappability mask directory')
 
-meancovfile = config.get('meancoverage_file', '/home/tc557/twin_peaks/twin_peaks/snakemake_1000Genomes_230213/meancoverage_240212.txt')
+meancovfile = validate_config('meancoverage_file', 'mean coverage file')
 
 
 def get_cram_file(wildcards):
     ID = names_IDs[wildcards.samplename]
-    cram_dir = config.get('cram_files_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/crumble/GRCh38')
+    cram_dir = validate_config('cram_files_dir', 'CRAM files directory')
     path_to_cram = f'{cram_dir}/{ID}.cram.crumble'
     return path_to_cram
 
@@ -26,7 +41,7 @@ def get_mean_coverage(file):
     stream = os.popen(bashcommand)
     meancov = stream.readlines()[0]
     meancov = float(meancov)
-    data_dir = config.get('data_dir', '/home/tc557/twin_peaks/twin_peaks')
+    data_dir = validate_config('data_dir', 'data directory')
     zoutfile = data_dir + '/snakemake_1000Genomes_230213/meancov_240212' + file.split('230213')[1].split('/bams')[0].replace('/','_') + '.txt'
     f = open(zoutfile, "a")
     f.write('meancov for {file} is {meancov}')
@@ -39,7 +54,7 @@ def get_mean_coverage_fcncommandline(file):
     return commandline
 
 def get_mean_coverage_2301109(wildcards):
-    data_dir = config.get('data_dir', '/home/tc557/twin_peaks/twin_peaks')
+    data_dir = validate_config('data_dir', 'data directory')
     with open(f'{data_dir}/snakemake_1000Genomes_230213/bamfiles_meancov_chr20_231109.txt','r') as f:
         lines = f.readlines()
     line = [line for line in lines if wildcards.zpop in line and wildcards.samplename in line][0]
@@ -47,7 +62,7 @@ def get_mean_coverage_2301109(wildcards):
     return meancov
 
 def get_posterior_means(wildcards):
-    genomes_dir = config.get('genomes_data_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/twin_peaks/genomes/human/HGDP')
+    genomes_dir = validate_config('genomes_data_dir', '1000 Genomes data directory')
     files = [f'{genomes_dir}/MSMC2_inference/HGDP_shortrepeatmask/D_{wildcards.D}/theta_{wildcards.theta}/rhoOvermu_{wildcards.rhoOvermu}/stridewidth_{wildcards.stride_width}/iterations_{wildcards.iterations}/{wildcards.sample}/decoding/posterior_means/chr{CHROM}.txt' for CHROM in range(1,23)]    
     return files
 
@@ -60,8 +75,8 @@ pops = ['ACB','ASW','BEB','CDX','CEU','CHB','CHS','CLM','ESN','FIN','GBR','GIH',
 
 pops_samples = {}
 names_IDs = {}
+sample_metadata_dir = validate_config('sample_metadata_dir', 'sample metadata directory')
 for pop in pops:
-    sample_metadata_dir = config.get('sample_metadata_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213')
     file_to_samples = f'{sample_metadata_dir}/231103_samples_name_ID_{pop}.txt'
     with open(file_to_samples,'r') as f:
         lines = f.readlines()
@@ -83,69 +98,71 @@ chroms = range(1,23)
 
 
 def get_mhs_files(wildcards):
-    output_dir = config.get('output_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213')
+    output_dir = validate_config('output_dir', 'output directory')
     files_mhs = [f'{output_dir}/{wildcards.zpop}/{wildcards.samplename}/mhs/chr{zchromz}.mhs' for zchromz in range(1,23)]    
     return files_mhs
 
 def get_mhs_files_230227(wildcards):
-    output_dir = config.get('output_dir', '/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213')
+    output_dir = validate_config('output_dir', 'output directory')
     files_mhs = [f'{output_dir}/{wildcards.zpop}/{wildcards.samplename}/mhs_230227/chr{zchromz}.mhs' for zchromz in range(1,23)]    
     return files_mhs
 
 
+output_dir = validate_config('output_dir', 'output directory')
+
 rule all: 
     input:
-        [f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{pop_sam[0]}/{pop_sam[1]}/mhs/chr{chrom}.mhs' for pop_sam in pop_sample for chrom in chroms] # write mhs
+        [f'{output_dir}/{pop_sam[0]}/{pop_sam[1]}/mhs/chr{chrom}.mhs' for pop_sam in pop_sample for chrom in chroms] # write mhs
        
 
 rule convert_cram_to_bam:
     input:
         infile = get_cram_file
     output:
-        outfile = temp(f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/aligned.bam') 
+        outfile = temp(f'{output_dir}/{{zpop}}/{{samplename}}/bams/aligned.bam') 
     log:
-        f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/log.txt'
+        f'{output_dir}/{{zpop}}/{{samplename}}/bams/log.txt'
     shell:
         'samtools view -b -T {reference_HGDP} -o {{output.outfile}} {{input.infile}}'
 
 rule sort_bam:
     input:
-        infile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/aligned.bam'
+        infile = f'{output_dir}/{{zpop}}/{{samplename}}/bams/aligned.bam'
     output:
-        outfile = temp(f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam')
+        outfile = temp(f'{output_dir}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam')
     shell:
         'samtools sort {{input.infile}} -o {{output.outfile}}'
 
 rule index_bam:
     input:
-        infile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam'
+        infile = f'{output_dir}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam'
     output:
-        outfile = temp(f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam.bai')
+        outfile = temp(f'{output_dir}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam.bai')
     shell:
         'samtools index {{input.infile}}'
 
 rule convert_bam_to_vcf_and_bed:
     input:
-        fileflag = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam.bai',
-        file = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam'
+        fileflag = f'{output_dir}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam.bai',
+        file = f'{output_dir}/{{zpop}}/{{samplename}}/bams/sorted_aligned.bam'
     output: 
-        vcffile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.vcf.gz',
-        bedfile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.bed.gz'
+        vcffile = f'{output_dir}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.vcf.gz',
+        bedfile = f'{output_dir}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.bed.gz'
     log: 
-        f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/vcf_beds/{{chrom}}.txt'
+        f'{output_dir}/{{zpop}}/{{samplename}}/vcf_beds/{{chrom}}.txt'
     params:
-        coverage = lambda wildcards: get_mean_coverage_fcncommandline(f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{wildcards.zpop}}/{{wildcards.samplename}}/bams/sorted_aligned.bam')
+        coverage = lambda wildcards: get_mean_coverage_fcncommandline(f'{output_dir}/{{wildcards.zpop}}/{{wildcards.samplename}}/bams/sorted_aligned.bam')
     shell:
         'bcftools mpileup -q 20 -Q 20 -C 50 -r chr{{wildcards.chrom}} -f {reference_HGDP} {{input.file}} | bcftools call -c -V indels | {bamCaller_script} {{params.coverage}} {{output.bedfile}} | gzip -c > {{output.vcffile}}'
 
 rule convert_vcfs_beds_to_mhs:
     input:
-        vcffile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.vcf.gz',
-        bedfile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.bed.gz',
+        vcffile = f'{output_dir}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.vcf.gz',
+        bedfile = f'{output_dir}/{{zpop}}/{{samplename}}/vcf_beds/chr{{chrom}}.bed.gz',
         mappability_mask = f'{mappability_mask_file}/chr{{chrom}}.bed',
     output: 
-        mhsfile = f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/mhs/chr{{chrom}}.mhs'
+        mhsfile = f'{output_dir}/{{zpop}}/{{samplename}}/mhs/chr{{chrom}}.mhs'
     log: 
-        f'{config.get("output_dir", "/home/tc557/rds/rds-durbin-group-8b3VcZwY7rY/projects/human/1000Genomes_30X/230213")}/{{zpop}}/{{samplename}}/mhs/log_chr{{chrom}}.txt'
+        f'{output_dir}/{{zpop}}/{{samplename}}/mhs/log_chr{{chrom}}.txt'
     shell:
         'python {generatemhs_script} --mask={{input.bedfile}} --mask={{input.mappability_mask}}  {{input.vcffile}} > {{output.mhsfile}}'

@@ -1,25 +1,38 @@
 import pdb
+import sys
 
 # Load configuration
 configfile: "config.yaml"
+
+# Validate that config has been updated from defaults
+def validate_config(key, description):
+    """Check if config value has been set to something other than placeholder"""
+    value = config.get(key)
+    if value is None:
+        print(f"ERROR: Required configuration '{key}' is not set in config.yaml", file=sys.stderr)
+        print(f"       Please edit config.yaml and set {description}", file=sys.stderr)
+        sys.exit(1)
+    if value.startswith('/path/to/'):
+        print(f"ERROR: Configuration '{key}' still has placeholder value: {value}", file=sys.stderr)
+        print(f"       Please edit config.yaml and set the actual path for {description}", file=sys.stderr)
+        sys.exit(1)
+    return value
 
 def debug_me(wildcards):
     pdb.set_trace()
     return None
 
 def get_mhs_files(wildcards):
-    # files = '/home/tc557/rds/hpc-work/snakemake_220214_ll_ratio/220804/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{qqq}.mhs' for qqq in range(1,21)]    
-    # files = os.listdir(f'/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604/L_{wildcards.L}/model_{wildcards.model}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/') # sample{wildcards.sample}_chrom{qqq}.mhs' for qqq in range(1,21)]
-    data_dir = config.get('data_dir', '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604')
+    data_dir = validate_config('data_dir', 'data directory for simulations')
     files = [f'{data_dir}/model_{wildcards.model}/L_{wildcards.L}/N_{wildcards.N}/mu_{wildcards.mu}/p_{wildcards.p}/D_{wildcards.D}/ts_{wildcards.ts}/te_{wildcards.te}/intensity_{wildcards.intensity}/gamma_{wildcards.gamma}/simmodel_{wildcards.sim_model}/spread1_{wildcards.spread_1}/spread2_{wildcards.spread_2}/sample{wildcards.sample}_chrom{zchromz}.mhs.gz' for zchromz in range(1,20+1)]
     return files
 
 
-script = config.get('simulation_script', '/home/tc557/ancestry/msprime_simulation_220216_combined.py')
+script = validate_config('simulation_script', 'simulation script path')
 
 # Helper function to get data directory
-DATA_DIR = config.get('data_dir', '/home/tc557/rds/hpc-work/cobraa_snakemakes/cobraa_simulations_and_inference_240604')
-COBRAA_SCRIPT = config.get('cobraa_script', '/home/tc557/cobraa/cobraa.py')
+DATA_DIR = validate_config('data_dir', 'data directory for simulations')
+COBRAA_SCRIPT = validate_config('cobraa_script', 'cobraa.py script path')
 
 
 mus = [1.25e-08]
